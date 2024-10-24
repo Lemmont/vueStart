@@ -31,7 +31,6 @@ app.post("/register", async (req, res) => {
   // get body
   // validation etc.
   const keys = Object.keys(req.body);
-  console.log(keys);
 
   const checkDuplicate = await client.query(
     `SELECT * from users where email='${req.body[
@@ -39,12 +38,11 @@ app.post("/register", async (req, res) => {
     ].toString()}' OR name='${req.body[keys[1]].toString()}'`
   );
 
-  if (checkDuplicate.length > 0) {
-    res.send({
+  if (checkDuplicate.rowCount > 0) {
+    res.status(409).send({
       message: `User ${req.body[keys[1]].toString()} with email ${req.body[
         keys[0]
       ].toString()} already exists`,
-      status: 999,
     });
     return;
   }
@@ -54,8 +52,6 @@ app.post("/register", async (req, res) => {
       keys[1]
     ].toString()}', '${req.body[keys[0]].toString()}', 'password')`
   );
-
-  console.log(checkDuplicate);
   res.send({ message: `Hello ${newUser}` });
 });
 
