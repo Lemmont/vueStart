@@ -16,10 +16,5 @@ export default {
 </template>
 
 <style scoped>
-.wrapper {
-  min-height: 100vh;
-  display: flex;
-  justify-content: space-between;
-  flex-direction: column;
-}
+
 </style>
