@@ -27,6 +27,9 @@ app.use(
     credentials: true,
   })
 );
+app.post("/auth/verify", (req, res) => {
+  console.log("ok");
+});
 
 app.post("/register", async (req, res) => {
   try {

@@ -4,7 +4,7 @@ import Home from '@/pages/Home.vue'
 import Register from '@/pages/Register.vue'
 
 const routes = [
-  { path: '/', name: 'hello', component: Home },
+  { path: '/', name: 'home', component: Home },
   { path: '/register', name: 'register', component: Register },
 ]
 
@@ -13,17 +13,24 @@ const router = createRouter({
   routes,
 })
 
+function canUserAccess(to) {
+  // which can we access without auth?
+  switch (to.name) {
+    case 'home':
+      return true
+    case 'register':
+      return true
+    default:
+      return false
+  }
+}
+
 router.beforeEach(async (to, from) => {
-  const isAuthenticated = false
-  if (
-    // not home page
-    from.name === 'hello' &&
-    // make sure the user is authenticated
-    !isAuthenticated &&
-    // ❗️ Avoid an infinite redirect
-    to.name !== 'register'
-  ) {
-    // redirect the user to the login page
+  // check server for valid authentication
+  const canAccess = canUserAccess(to)
+
+  // check auth
+  if (!canAccess) {
     return '/register'
   }
 })
