@@ -6,11 +6,13 @@ export default {
   data() {
     return {
       email: '123@kaas.nl',
-      name: 'bling123 ',
+      password: '',
+      showPassword: 'password',
       finished: false,
       errorMessages: {
         nameInput: '',
         emailInput: '',
+        userFound: '',
       },
     }
   },
@@ -23,28 +25,24 @@ export default {
   methods: {
     async signUp(e) {
       e.preventDefault()
-      // form validation?
-      // if (true) {
-      //   this.errorMessages.nameInput = 'Not correct'
-      //   return
-      // }
 
-      // do backend stuff
-      // complete
-
-      const res = await AuthenticationService.register({
-        email: this.email,
-        name: this.name,
-      })
-
-      if (res.statusText == 'OK') {
-        console.log(res.data)
+      try {
+        const res = await AuthenticationService.register({
+          email: this.email,
+          password: this.password,
+        })
+        console.log(res)
+        const token = res.data.accessToken
+        localStorage.setItem('token', token)
+        console.log('succes')
         this.finished = true
-      } else {
-        // nothing
+      } catch (error) {
+        if (error.status == 409) {
+          console.error('409: User already found')
+          this.errorMessages.userFound = 'User already registered'
+        }
+        return
       }
-
-      // succes?
     },
   },
 }
@@ -65,12 +63,28 @@ export default {
 
     <div class="formItem">
       <div>
-        <label :for="name">Name:</label>
+        <label :for="password">Password:</label>
       </div>
-      <input type="text" :id="name" :name="name" v-model="name" />
+      <input
+        :type="showPassword"
+        :id="password"
+        :name="password"
+        v-model="password"
+      />
     </div>
-
-    <button type="submit" class="primaryButton">submit</button>
+    <div class="showPassword formItem">
+      <label :for="password">show password</label>
+      <input
+        type="checkbox"
+        :id="showPassword"
+        :name="showPassword"
+        v-model="showPassword"
+        true-value="text"
+        false-value="password"
+      />
+    </div>
+    <p style="color: red">{{ this.errorMessages.userFound }}</p>
+    <button type="submit" class="primaryButton">Sign in</button>
   </form>
 </template>
 
@@ -99,5 +113,14 @@ input {
 
 label {
   font-size: 1.1rem;
+}
+
+.showPassword {
+  display: flex;
+  align-items: center;
+}
+.showPassword label {
+  margin: 0 5px 0 0;
+  font-size: 0.9rem;
 }
 </style>

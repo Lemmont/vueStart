@@ -13,4 +13,19 @@ const router = createRouter({
   routes,
 })
 
+router.beforeEach(async (to, from) => {
+  const isAuthenticated = false
+  if (
+    // not home page
+    from.name === 'hello' &&
+    // make sure the user is authenticated
+    !isAuthenticated &&
+    // ❗️ Avoid an infinite redirect
+    to.name !== 'register'
+  ) {
+    // redirect the user to the login page
+    return '/register'
+  }
+})
+
 export default router
